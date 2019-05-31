@@ -1,0 +1,18 @@
+sudo: required
+dist: xenial
+
+services:
+  - docker
+
+git:
+  depth: 5
+
+jobs:
+  include:
+    - stage: build prometsource/base image
+      script:
+      - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+      - docker build -t base ./docker/base/.
+      - docker images
+      - docker tag base prometsource/base
+      - docker push prometsource/base
