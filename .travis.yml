@@ -16,3 +16,10 @@ jobs:
       - docker images
       - docker tag base prometsource/base
       - docker push prometsource/base
+    - stage: build prometsource/apache2 image
+      script:
+      - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+      - docker build -t apache2 ./docker/apache2/.
+      - docker images
+      - docker tag apache2 prometsource/apache2
+      - docker push prometsource/apache2

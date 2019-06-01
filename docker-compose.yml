@@ -1,0 +1,11 @@
+version: '3.4'
+services:
+  base:
+    build: docker/base
+    environment:
+      TZ: 'EST5EDT'
+
+  apache2:
+    build: docker/apache2
+    environment:
+      TZ: 'EST5EDT'
