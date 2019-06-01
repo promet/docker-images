@@ -32,7 +32,7 @@ jobs:
       - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
       - docker build -t apache2 ./docker/apache2/.
       - docker-compose up -d --build apache2
-      - docker-compose run apache2 /bin/bash -c 'cat /etc/os-release' > "release"
+      - docker-compose exec apache2 /bin/bash -c 'cat /etc/os-release' > "release"
       - source release
       - ver1=${PRETTY_NAME// LTS}
       - ver1=${ver1// /-}

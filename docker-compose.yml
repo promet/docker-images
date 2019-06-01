@@ -7,5 +7,10 @@ services:
 
   apache2:
     build: docker/apache2
+    #image: prometsource/apache2
     environment:
       TZ: 'EST5EDT'
+      WEB_ALIAS_DOMAIN: 'docker.test'
+    ports:
+      - 80:80
+      - 443:443

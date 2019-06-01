@@ -1,5 +1,7 @@
 FROM ubuntu:16.04
 
+COPY bin/ /opt/local/bin/
+
 RUN apt-get -y update \
  && apt-get -y upgrade \
  && apt-get -y install ca-certificates apt-transport-https curl wget zip unzip bzip2 p7zip rsync git lsb-release \
@@ -7,24 +9,21 @@ RUN apt-get -y update \
  ## to reduce the size of the container.
  && rm -rf /var/lib/apt/lists/* \
  && apt autoremove -y \
- ## Add GOSU
+ ## Add gosu and go-replace
  && mkdir -p \
-        /baselayout/sbin \
-        /baselayout/usr/local/bin \
+        /usr/local/bin \
+    ## Install go-replace
+    && wget -O "/usr/local/bin/go-replace" "https://github.com/webdevops/goreplace/releases/download/1.1.2/gr-64-linux" \
+    && chmod +x "/usr/local/bin/go-replace" \
+    && "/usr/local/bin/go-replace" --version \
     # Install gosu
-    && wget -O "/baselayout/sbin/gosu" "https://github.com/tianon/gosu/releases/download/1.10/gosu-amd64" \
+    && wget -O "/sbin/gosu" "https://github.com/tianon/gosu/releases/download/1.10/gosu-amd64" \
     && wget -O "/tmp/gosu.asc" "https://github.com/tianon/gosu/releases/download/1.10/gosu-amd64.asc" \
     && export GNUPGHOME="$(mktemp -d)" \
     && gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
-    && gpg --batch --verify /tmp/gosu.asc "/baselayout/sbin/gosu" \
+    && gpg --batch --verify /tmp/gosu.asc "/sbin/gosu" \
     && rm -rf "$GNUPGHOME" /tmp/gosu.asc \
-    && chmod +x "/baselayout/sbin/gosu" \
-    && "/baselayout/sbin/gosu" nobody true
-##ENV echo $PRETTY_NAME
-##RUN /bin/bash -C "source /etc/os-release" \
-## && /bin/bash -C "ver1=${PRETTY_NAME// LTS}" \
-## && /bin/bash -C "ver1=${ver1// /-}" \
-## && /bin/bash -C "ver1=${ver1,,}" \
-## && /bin/bash =C "echo $ver1"
+    && chmod +x "/sbin/gosu" \
+    && "/sbin/gosu" nobody true
 
 CMD ["/bin/bash"]

@@ -1,27 +1,24 @@
 #!/usr/bin/env bash
+# Replace markers
+go-replace \
+    -s "<DOCUMENT_INDEX>" -r "$WEB_DOCUMENT_INDEX" \
+    -s "<DOCUMENT_ROOT>" -r "$WEB_DOCUMENT_ROOT" \
+    -s "<ALIAS_DOMAIN>" -r "$WEB_ALIAS_DOMAIN" \
+    -s "<SERVERNAME>" -r "$HOSTNAME" \
+    -s "<PHP_SOCKET>" -r "$WEB_PHP_SOCKET" \
+    -s "<PHP_TIMEOUT>" -r "$WEB_PHP_TIMEOUT" \
+    --path=/opt/docker/etc/httpd/ \
+    --path-pattern='*.conf' \
+    --ignore-empty
 
-IMAGE_FAMILY=$(docker-image-info family)
-IMAGE_DISTRIBUTION=$(docker-image-info dist)
-IMAGE_DISTRIBUTION_VERSION=$(docker-image-info dist-version)
-IMAGE_DISTRIBUTION_VERSION_MAIN=$(echo "$IMAGE_DISTRIBUTION_VERSION" | sed 's/^\([0-9]*\).*/\1/g')
+if [[ -z "$WEB_PHP_SOCKET" ]]; then
+    ## WEB_PHP_SOCKET is not set, remove PHP files
+    rm -f -- /opt/docker/etc/httpd/conf.d/10-php.conf
+fi
 
 # Collect environment variables
-case "$IMAGE_FAMILY" in
-    Debian|Ubuntu)
-         APACHE_MAIN_PATH=/etc/apache2/
-         APACHE_DOCKER_VHOST=/etc/apache2/sites-enabled/10-docker.conf
-        ;;
-
-    RedHat)
-        APACHE_MAIN_PATH=/etc/httpd/
-        APACHE_DOCKER_VHOST=/etc/httpd/conf.d/zzz-docker.conf
-        ;;
-
-    Alpine)
-         APACHE_MAIN_PATH=/etc/apache2/
-         APACHE_DOCKER_VHOST=/etc/apache2/conf.d/zzz-docker.conf
-        ;;
-esac
+APACHE_MAIN_PATH=/etc/apache2/
+APACHE_DOCKER_VHOST=/etc/apache2/sites-enabled/10-docker.conf
 
 # Enable apache main config
 ln -sf -- /opt/docker/etc/httpd/main.conf "$APACHE_DOCKER_VHOST"
@@ -29,16 +26,9 @@ ln -sf -- /opt/docker/etc/httpd/main.conf "$APACHE_DOCKER_VHOST"
 # Ensure /var/run/apache2 exists
 mkdir -p -- "/var/run/apache2"
 
-if [[ "$IMAGE_FAMILY" == "Alpine" ]]; then
-    mkdir -p -- "/run/apache2"
-fi
-
-# Maintain lock directory
-if [[ "$IMAGE_FAMILY" == "Debian" ]]; then
-    mkdir -p -- "/var/lock/apache2"
-    chmod 0750 -- "/var/lock/apache2"
-    chown www-data:www-data -- "/var/lock/apache2"
-fi
+mkdir -p -- "/var/lock/apache2"
+chmod 0750 -- "/var/lock/apache2"
+chown www-data:www-data -- "/var/lock/apache2"
 
 APACHE_CONF_FILES=$(find "$APACHE_MAIN_PATH" -type f -iname '*.conf' -o -iname 'default*' -o -iname '*log')
 
@@ -50,49 +40,8 @@ go-replace --regex --regex-backrefs \
     --path-regex='(.*\.conf|default.*|.*log)$'
 
 # Switch MPM to event
-if [[ "$IMAGE_FAMILY" == "RedHat" ]]; then
-    go-replace --mode=line --regex --regex-backrefs \
-        -s '^[\s#]*(LoadModule mpm_prefork_module.*)' -r '#$1' \
-        -s '^[\s#]*(LoadModule mpm_event_module.*)' -r '$1' \
-        -- /etc/httpd/conf.modules.d/00-mpm.conf
-fi
 
-if [[ "$IMAGE_DISTRIBUTION" == "Ubuntu" ]] && [[ "$IMAGE_DISTRIBUTION_VERSION_MAIN" -ge 14 ]]; then
-    a2enmod mpm_event
-fi
-
-if [[ "$IMAGE_DISTRIBUTION" == "Debian" ]] && [[ "$IMAGE_DISTRIBUTION_VERSION_MAIN" -ge 8 ]]; then
-    a2enmod mpm_event
-fi
-
-if [[ "$IMAGE_FAMILY" == "Alpine" ]]; then
-    go-replace --mode=line --regex --regex-backrefs \
-        -s '^[\s#]*(LoadModule mpm_prefork_module.*)' -r '#$1' \
-        -s '^[\s#]*(LoadModule mpm_event_module.*)' -r '$1' \
-        -s '^[\s#]*(LoadModule deflate_module.*)' -r '$1' \
-        -s '^[\s#]*(LoadModule rewrite_module.*)' -r '$1' \
-        -s '^[\s#]*(LoadModule logio_module.*)' -r '$1' \
-        -s '^[\s#]*(LoadModule slotmem_shm_module.*)' -r '$1' \
-        -s '^[\s#]*(LoadModule actions_module.*)' -r '$1' \
-        -s '^[\s#]*(LoadModule expires_module.*)' -r '$1' \
-        -s '^[\s#]*(LoadModule ssl_module.*)' -r '$1' \
-        -s '^[\s#]*(LoadModule socache_shmcb_module.*)' -r '$1' \
-        -s '^[\s#]*(LoadModule proxy_ajp_module.*)' -r '#$1' \
-        -s '^[\s#]*(LoadModule proxy_connect_module.*)' -r '#$1' \
-        -s '^[\s#]*(LoadModule proxy_balancer_module.*)' -r '#$1' \
-        -s '^[\s#]*(LoadModule proxy_express_module.*)' -r '#$1' \
-        -s '^[\s#]*(LoadModule proxy_fcgi_module.*)' -r '$1' \
-        -s '^[\s#]*(LoadModule proxy_fdpass_module.*)' -r '$1' \
-        -s '^[\s#]*(LoadModule proxy_ftp_module.*)' -r '$1' \
-        -s '^[\s#]*(LoadModule proxy_http_module.*)' -r '$1' \
-        -s '^[\s#]*(LoadModule proxy_scgi_module.*)' -r '$1' \
-        --  /etc/apache2/httpd.conf \
-            /etc/apache2/conf.d/ssl.conf \
-            /etc/apache2/conf.d/proxy.conf
-
-    # Remove default vhost
-    sed -i -e '1h;2,$H;$!d;g' -e 's/<VirtualHost.*<\/VirtualHost>/#-> removed vhost/g' /etc/apache2/conf.d/ssl.conf
-fi
+a2enmod mpm_event
 
 # Fix rights of ssl files
 chown -R root:root /opt/docker/etc/httpd/ssl

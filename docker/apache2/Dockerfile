@@ -1,10 +1,10 @@
 FROM prometsource/base
 
-ENV WEB_DOCUMENT_ROOT=/app \
+ENV WEB_DOCUMENT_ROOT=/var/www/html \
     WEB_DOCUMENT_INDEX=index.php \
     WEB_ALIAS_DOMAIN=*.vm \
     WEB_PHP_TIMEOUT=600 \
-    WEB_PHP_SOCKET=""
+    WEB_PHP_SOCKET="9000"
 
 COPY conf/ /opt/docker/
 
@@ -23,7 +23,9 @@ RUN set -x \
  ## to reduce the size of the container.
  && rm -rf /var/lib/apt/lists/* \
  && apt autoremove -y
+ ## && ./opt/docker/provision/entrypoint.d/20-apache.sh \
+ ## && ./opt/docker/provision/bootstrap.d/10-apache.sh
 
 EXPOSE 80 443
 
-CMD ["/bin/bash"]
+ENTRYPOINT ["/opt/docker/bin/service.d/httpd.sh"]
