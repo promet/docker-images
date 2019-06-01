@@ -2,7 +2,7 @@ FROM ubuntu:16.04
 
 RUN apt-get -y update \
  && apt-get -y upgrade \
- && apt-get -y install ca-certificates apt-transport-https curl wget zip unzip bzip2 p7zip rsync git \
+ && apt-get -y install ca-certificates apt-transport-https curl wget zip unzip bzip2 p7zip rsync git lsb-release \
  ## Add other packages here, but the following two lines need to run last after adding packages
  ## to reduce the size of the container.
  && rm -rf /var/lib/apt/lists/* \
@@ -20,5 +20,11 @@ RUN apt-get -y update \
     && rm -rf "$GNUPGHOME" /tmp/gosu.asc \
     && chmod +x "/baselayout/sbin/gosu" \
     && "/baselayout/sbin/gosu" nobody true
+##ENV echo $PRETTY_NAME
+##RUN /bin/bash -C "source /etc/os-release" \
+## && /bin/bash -C "ver1=${PRETTY_NAME// LTS}" \
+## && /bin/bash -C "ver1=${ver1// /-}" \
+## && /bin/bash -C "ver1=${ver1,,}" \
+## && /bin/bash =C "echo $ver1"
 
 CMD ["/bin/bash"]
