@@ -45,3 +45,21 @@ jobs:
       - docker push prometsource/apache2
       - docker push prometsource/apache2:$ver1
       - docker push prometsource/apache2:ubuntu-$ver2
+    - stage: build prometsource/php7.3 image
+      script:
+      - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+      - docker build -t php7.3 ./docker/php7.3/.
+      - docker-compose up -d --build php7.3
+      - docker-compose exec php7.3 /bin/bash -c 'cat /etc/os-release' > "release"
+      - source release
+      - ver1=${PRETTY_NAME// LTS}
+      - ver1=${ver1// /-}
+      - ver1=${ver1,,}
+      - ver1=${ver1/$'\r'/}
+      - ver2=${VERSION_ID/$'\r'/}
+      - docker tag php7.3 prometsource/php7.3
+      - docker tag php7.3 prometsource/php7.3:$ver1
+      - docker tag php7.3 prometsource/php7.3:ubuntu-$ver2
+      - docker push prometsource/php7.3
+      - docker push prometsource/php7.3:$ver1
+      - docker push prometsource/php7.3:ubuntu-$ver2

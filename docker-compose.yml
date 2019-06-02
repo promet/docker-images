@@ -4,13 +4,25 @@ services:
     build: docker/base
     environment:
       TZ: 'EST5EDT'
-
   apache2:
-    build: docker/apache2
-    #image: prometsource/apache2
+    #build: docker/apache2
+    image: prometsource/apache2
     environment:
       TZ: 'EST5EDT'
-      WEB_ALIAS_DOMAIN: 'docker.test'
+      WEB_ALIAS_DOMAIN: 'www.docker.test'
+      HOSTNAME: 'docker.test'
+      WEB_PHP_SOCKET: 'php:9000'
+      WEB_DOCUMENT_ROOT: '/var/www/html'
     ports:
       - 80:80
       - 443:443
+    volumes:
+      - ./html:/var/www/html
+  php7.3:
+    build: docker/php7.3
+    environment:
+      TZ: 'EST5EDT'
+      COMPOSER_MEMORY_LIMIT: -1
+      WEB_DOCUMENT_ROOT: '/var/www/html'
+    volumes:
+      - ./html:/var/www/html

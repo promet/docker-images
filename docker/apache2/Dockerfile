@@ -4,7 +4,7 @@ ENV WEB_DOCUMENT_ROOT=/var/www/html \
     WEB_DOCUMENT_INDEX=index.php \
     WEB_ALIAS_DOMAIN=*.vm \
     WEB_PHP_TIMEOUT=600 \
-    WEB_PHP_SOCKET="9000"
+    WEB_PHP_SOCKET="php:9000"
 
 COPY conf/ /opt/docker/
 
@@ -22,9 +22,9 @@ RUN set -x \
  ## Add other packages here, but the following two lines need to run last after adding packages
  ## to reduce the size of the container.
  && rm -rf /var/lib/apt/lists/* \
- && apt autoremove -y
+ && apt autoremove -y \
  ## && ./opt/docker/provision/entrypoint.d/20-apache.sh \
- ## && ./opt/docker/provision/bootstrap.d/10-apache.sh
+ && ./opt/docker/provision/bootstrap.d/10-apache.sh
 
 EXPOSE 80 443
 
