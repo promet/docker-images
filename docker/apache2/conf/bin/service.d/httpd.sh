@@ -16,8 +16,6 @@ if [[ -z "$WEB_PHP_SOCKET" ]]; then
     rm -f -- /opt/docker/etc/httpd/conf.d/10-php.conf
 fi
 
-##source /opt/docker/provision/entrypoint.d/20-apache.sh
-
 # Init vars
 if [[ -z "$SERVICE_APACHE_OPTS" ]]; then SERVICE_APACHE_OPTS=""; fi
 

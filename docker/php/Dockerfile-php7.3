@@ -1,0 +1,16 @@
+FROM prometsource/php:latest
+
+ENV WEB_PHP_VERSION="7.3"
+
+RUN set -x \
+    # Install php environment
+ && apt-get -y update \
+ && apt-get -y upgrade \
+ && /opt/docker/etc/php/replace.sh \
+ && /opt/docker/etc/php/bin/php.sh \ 
+ && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+ && apt autoremove -y \
+ && mkdir -p /run/php \
+ && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin/ --filename=composer
+
+CMD ["/usr/bin/supervisord"]

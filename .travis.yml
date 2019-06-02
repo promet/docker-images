@@ -11,10 +11,8 @@ jobs:
   include:
     - stage: build prometsource/base image
       script:
-      - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
       - docker build -t base ./docker/base/.
-      - docker-compose up -d --build base
-      - docker-compose run base /bin/bash -c 'cat /etc/os-release' > "release"
+      - docker run -it --rm base bash -c 'cat /etc/os-release' > "release"
       - source release
       - ver1=${PRETTY_NAME// LTS}
       - ver1=${ver1// /-}
@@ -24,15 +22,15 @@ jobs:
       - docker tag base prometsource/base
       - docker tag base prometsource/base:$ver1
       - docker tag base prometsource/base:ubuntu-$ver2
+      - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
       - docker push prometsource/base
       - docker push prometsource/base:$ver1
       - docker push prometsource/base:ubuntu-$ver2
     - stage: build prometsource/apache2 image
       script:
-      - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
       - docker build -t apache2 ./docker/apache2/.
-      - docker-compose up -d --build apache2
-      - docker-compose exec apache2 /bin/bash -c 'cat /etc/os-release' > "release"
+      - docker run -d --name apache2 apache2
+      - docker exec apache2 bash -c 'cat /etc/os-release' > "release"
       - source release
       - ver1=${PRETTY_NAME// LTS}
       - ver1=${ver1// /-}
@@ -42,15 +40,34 @@ jobs:
       - docker tag apache2 prometsource/apache2
       - docker tag apache2 prometsource/apache2:$ver1
       - docker tag apache2 prometsource/apache2:ubuntu-$ver2
+      - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
       - docker push prometsource/apache2
       - docker push prometsource/apache2:$ver1
       - docker push prometsource/apache2:ubuntu-$ver2
+    - stage: build prometsource/php base image
+      script:
+      - cp ./docker/php/Dockerfile-php ./docker/php/Dockerfile
+      - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+      - docker build -t php ./docker/php/.
+      - docker run -it --rm php bash -c 'cat /etc/os-release' > "release"
+      - source release
+      - ver1=${PRETTY_NAME// LTS}
+      - ver1=${ver1// /-}
+      - ver1=${ver1,,}
+      - ver1=${ver1/$'\r'/}
+      - ver2=${VERSION_ID/$'\r'/}
+      - docker tag php prometsource/php
+      - docker tag php prometsource/php:$ver1
+      - docker tag php prometsource/php:ubuntu-$ver2
+      - docker push prometsource/php
+      - docker push prometsource/php:$ver1
+      - docker push prometsource/php:ubuntu-$ver2      
     - stage: build prometsource/php7.3 image
       script:
+      - cp ./docker/php/Dockerfile-php7.3 ./docker/php/Dockerfile
       - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-      - docker build -t php7.3 ./docker/php7.3/.
-      - docker-compose up -d --build php7.3
-      - docker-compose exec php7.3 /bin/bash -c 'cat /etc/os-release' > "release"
+      - docker build -t php7.3 ./docker/php/.
+      - docker run -it --rm php7.3 bash -c 'cat /etc/os-release' > "release"
       - source release
       - ver1=${PRETTY_NAME// LTS}
       - ver1=${ver1// /-}
@@ -62,4 +79,40 @@ jobs:
       - docker tag php7.3 prometsource/php7.3:ubuntu-$ver2
       - docker push prometsource/php7.3
       - docker push prometsource/php7.3:$ver1
-      - docker push prometsource/php7.3:ubuntu-$ver2
+      - docker push prometsource/php7.3:ubuntu-$ver2      
+    - stage: build prometsource/php7.2 image
+      script:
+      - cp ./docker/php/Dockerfile-php7.2 ./docker/php/Dockerfile
+      - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+      - docker build -t php7.2 ./docker/php/.
+      - docker run -it --rm php7.2 bash -c 'cat /etc/os-release' > "release"
+      - source release
+      - ver1=${PRETTY_NAME// LTS}
+      - ver1=${ver1// /-}
+      - ver1=${ver1,,}
+      - ver1=${ver1/$'\r'/}
+      - ver2=${VERSION_ID/$'\r'/}
+      - docker tag php7.2 prometsource/php7.2
+      - docker tag php7.2 prometsource/php7.2:$ver1
+      - docker tag php7.2 prometsource/php7.2:ubuntu-$ver2
+      - docker push prometsource/php7.2
+      - docker push prometsource/php7.2:$ver1
+      - docker push prometsource/php7.2:ubuntu-$ver2      
+    - stage: build prometsource/php7.1 image
+      script:
+      - cp ./docker/php/Dockerfile-php7.1 ./docker/php/Dockerfile
+      - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+      - docker build -t php7.1 ./docker/php/.
+      - docker run -it --rm php7.1 bash -c 'cat /etc/os-release' > "release"
+      - source release
+      - ver1=${PRETTY_NAME// LTS}
+      - ver1=${ver1// /-}
+      - ver1=${ver1,,}
+      - ver1=${ver1/$'\r'/}
+      - ver2=${VERSION_ID/$'\r'/}
+      - docker tag php7.1 prometsource/php7.1
+      - docker tag php7.1 prometsource/php7.1:$ver1
+      - docker tag php7.1 prometsource/php7.1:ubuntu-$ver2
+      - docker push prometsource/php7.1
+      - docker push prometsource/php7.1:$ver1
+      - docker push prometsource/php7.1:ubuntu-$ver2      

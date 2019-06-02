@@ -23,7 +23,6 @@ RUN set -x \
  ## to reduce the size of the container.
  && rm -rf /var/lib/apt/lists/* \
  && apt autoremove -y \
- ## && ./opt/docker/provision/entrypoint.d/20-apache.sh \
  && ./opt/docker/provision/bootstrap.d/10-apache.sh
 
 EXPOSE 80 443

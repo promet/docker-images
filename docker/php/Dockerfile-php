@@ -1,0 +1,41 @@
+FROM prometsource/base
+
+ENV WEB_DOCUMENT_ROOT=/var/www/html \
+    WEB_DOCUMENT_INDEX=index.php \
+    WEB_ALIAS_DOMAIN=*.vm \
+    WEB_PHP_TIMEOUT=600 \
+    WEB_PHP_SOCKET="php:9000" \
+    WEB_PHP_VERSION=""
+
+COPY conf/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY bin/php.sh /opt/docker/etc/php/bin/php.sh
+COPY bin/replace.sh /opt/docker/etc/php/replace.sh
+
+RUN set -x \
+    # Install php environment
+ && apt-get -y update \
+ && apt-get -y upgrade \
+ && apt-get -y install \
+	software-properties-common \
+ && LC_ALL=C.UTF-8 add-apt-repository ppa:ondrej/php \
+ && apt-get -y update \
+ && apt-get -y install \
+    # Install tools
+    imagemagick \
+    graphicsmagick \
+    ghostscript \
+    jpegoptim \
+    libjpeg-turbo-progs \
+    pngcrush \
+    optipng \
+    apngopt \
+    pngnq \
+    pngquant \
+    mysql-client \
+    aptitude \
+    supervisor \
+ && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+ && apt autoremove -y \
+ && mkdir -p /run/php
+
+EXPOSE 9000
