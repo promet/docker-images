@@ -37,6 +37,14 @@ RUN set -x \
     gcc make autoconf libc-dev pkg-config libmcrypt-dev \
  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
  && apt autoremove -y \
- && mkdir -p /run/php
+ && mkdir -p /run/php \
+# Install MailHog Sendmail support.
+ && apt-get update -qq && apt-get install -yq git golang-go && \
+    mkdir -p /opt/go && \
+    export GOPATH=/opt/go && \
+    go get github.com/mailhog/mhsendmail \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/* \
+ && apt autoremove -y
 
 EXPOSE 9000
