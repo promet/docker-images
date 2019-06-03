@@ -1,4 +1,7 @@
 # Promet Source open source Docker images
+
+[![Build Status](https://travis-ci.org/promet-source/docker-images.svg?branch=develop)](https://travis-ci.org/promet-source/docker-images)
+
 This repository contains the Promet Source supported public Docker images.  These images are hosted publicly on Docker Hub.
 
 The purpose of these images is to provide a consistent set of Docker images for Drupal projects.  The images in this repository are built nightly via a cron job on Travis CI, and automatically deployed to Docker Hub on successful build.
