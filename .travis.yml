@@ -53,7 +53,7 @@ jobs:
       - source release
       - ver1=${PRETTY_NAME// LTS}
       - ver1=${ver1// /-}
-      - ver1=${ver1,,}
+      - ver1=$(echo "$ver1" | awk '{print tolower($0)}')
       - ver1=${ver1/$'\r'/}
       - ver2=${VERSION_ID/$'\r'/}
       - docker tag php prometsource/php
@@ -61,17 +61,18 @@ jobs:
       - docker tag php prometsource/php:ubuntu-$ver2
       - docker push prometsource/php
       - docker push prometsource/php:$ver1
-      - docker push prometsource/php:ubuntu-$ver2      
+      - docker push prometsource/php:ubuntu-$ver2
     - stage: build prometsource/php7.3 image
       script:
       - cp ./docker/php/Dockerfile-php7.3 ./docker/php/Dockerfile
       - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
       - docker build -t php7.3 ./docker/php/.
+      - docker run -it --rm php7.3 bash -c 'php -v'
       - docker run -it --rm php7.3 bash -c 'cat /etc/os-release' > "release"
       - source release
       - ver1=${PRETTY_NAME// LTS}
       - ver1=${ver1// /-}
-      - ver1=${ver1,,}
+      - ver1=$(echo "$ver1" | awk '{print tolower($0)}')
       - ver1=${ver1/$'\r'/}
       - ver2=${VERSION_ID/$'\r'/}
       - docker tag php7.3 prometsource/php7.3
@@ -85,11 +86,12 @@ jobs:
       - cp ./docker/php/Dockerfile-php7.2 ./docker/php/Dockerfile
       - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
       - docker build -t php7.2 ./docker/php/.
+      - docker run -it --rm php7.2 bash -c 'php -v'
       - docker run -it --rm php7.2 bash -c 'cat /etc/os-release' > "release"
       - source release
       - ver1=${PRETTY_NAME// LTS}
       - ver1=${ver1// /-}
-      - ver1=${ver1,,}
+      - ver1=$(echo "$ver1" | awk '{print tolower($0)}')
       - ver1=${ver1/$'\r'/}
       - ver2=${VERSION_ID/$'\r'/}
       - docker tag php7.2 prometsource/php7.2
@@ -103,11 +105,12 @@ jobs:
       - cp ./docker/php/Dockerfile-php7.1 ./docker/php/Dockerfile
       - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
       - docker build -t php7.1 ./docker/php/.
+      - docker run -it --rm php7.1 bash -c 'php -v'
       - docker run -it --rm php7.1 bash -c 'cat /etc/os-release' > "release"
       - source release
       - ver1=${PRETTY_NAME// LTS}
       - ver1=${ver1// /-}
-      - ver1=${ver1,,}
+      - ver1=$(echo "$ver1" | awk '{print tolower($0)}')
       - ver1=${ver1/$'\r'/}
       - ver2=${VERSION_ID/$'\r'/}
       - docker tag php7.1 prometsource/php7.1
