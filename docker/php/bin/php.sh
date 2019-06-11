@@ -131,7 +131,7 @@ sed -i -e 's/;daemonize = yes/daemonize = no/g' /etc/php/<PHP_VERSION>/fpm/php-f
 
 { \
     echo '[xdebug]'; \
-    echo 'zend_extension=xdebug.so'; \
+    echo 'zend_extension=/usr/lib/php/20170718/xdebug.so'; \
     echo 'xdebug.profiler_enable=0'; \
     echo 'xdebug.default_enable=1'; \
     echo 'xdebug.remote_enable=1'; \
