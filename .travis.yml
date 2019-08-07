@@ -118,4 +118,12 @@ jobs:
       - docker tag php7.1 prometsource/php7.1:ubuntu-$ver2
       - docker push prometsource/php7.1
       - docker push prometsource/php7.1:$ver1
-      - docker push prometsource/php7.1:ubuntu-$ver2      
+      - docker push prometsource/php7.1:ubuntu-$ver2
+    - stage: build prometsource/php7.1:drupal-light-apache image
+      script:
+      - cp ./docker/php/Dockerfile-php7.1-drupal-light-apache ./docker/php/Dockerfile
+      - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+      - docker build -t php7.1:drupal-light-apache ./docker/php/.
+      - docker run -it --rm php7.1:drupal-light-apache php -v
+      - docker tag php7.1:drupal-light-apache prometsource/php7.1:drupal-light-apache
+      - docker push prometsource/php7.1:drupal-light-apache
