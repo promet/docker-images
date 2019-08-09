@@ -22,7 +22,8 @@ jobs:
       - docker tag base prometsource/base
       - docker tag base prometsource/base:$ver1
       - docker tag base prometsource/base:ubuntu-$ver2
-      - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      #- docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
       - docker push prometsource/base
       - docker push prometsource/base:$ver1
       - docker push prometsource/base:ubuntu-$ver2
@@ -40,14 +41,16 @@ jobs:
       - docker tag apache2 prometsource/apache2
       - docker tag apache2 prometsource/apache2:$ver1
       - docker tag apache2 prometsource/apache2:ubuntu-$ver2
-      - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      #- docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
       - docker push prometsource/apache2
       - docker push prometsource/apache2:$ver1
       - docker push prometsource/apache2:ubuntu-$ver2
     - stage: build prometsource/php base image
       script:
       - cp ./docker/php/Dockerfile-php ./docker/php/Dockerfile
-      - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      #- docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
       - docker build -t php ./docker/php/.
       - docker run -it --rm php bash -c 'cat /etc/os-release' > "release"
       - source release
@@ -65,7 +68,8 @@ jobs:
     - stage: build prometsource/php7.3 image
       script:
       - cp ./docker/php/Dockerfile-php7.3 ./docker/php/Dockerfile
-      - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      #- docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
       - docker build -t php7.3 ./docker/php/.
       - docker run -it --rm php7.3 bash -c 'php -v'
       - docker run -it --rm php7.3 bash -c 'cat /etc/os-release' > "release"
@@ -84,7 +88,8 @@ jobs:
     - stage: build prometsource/php7.2 image
       script:
       - cp ./docker/php/Dockerfile-php7.2 ./docker/php/Dockerfile
-      - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      #- docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
       - docker build -t php7.2 ./docker/php/.
       - docker run -it --rm php7.2 bash -c 'php -v'
       - docker run -it --rm php7.2 bash -c 'cat /etc/os-release' > "release"
@@ -103,7 +108,8 @@ jobs:
     - stage: build prometsource/php7.1 image
       script:
       - cp ./docker/php/Dockerfile-php7.1 ./docker/php/Dockerfile
-      - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      #- docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
       - docker build -t php7.1 ./docker/php/.
       - docker run -it --rm php7.1 bash -c 'php -v'
       - docker run -it --rm php7.1 bash -c 'cat /etc/os-release' > "release"
@@ -118,4 +124,13 @@ jobs:
       - docker tag php7.1 prometsource/php7.1:ubuntu-$ver2
       - docker push prometsource/php7.1
       - docker push prometsource/php7.1:$ver1
-      - docker push prometsource/php7.1:ubuntu-$ver2      
+      - docker push prometsource/php7.1:ubuntu-$ver2
+    - stage: build prometsource/php7.1:drupal-light-apache image
+      script:
+      - cp ./docker/php/Dockerfile-php7.1-drupal-light-apache ./docker/php/Dockerfile
+      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      #- docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+      - docker build -t php7.1:drupal-light-apache ./docker/php/.
+      - docker run -it --rm php7.1:drupal-light-apache php -v
+      - docker tag php7.1:drupal-light-apache prometsource/php7.1:drupal-light-apache
+      - docker push prometsource/php7.1:drupal-light-apache
