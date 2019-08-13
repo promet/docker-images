@@ -125,13 +125,13 @@ sed -i -e 's/listen = \/run\/php\/php<PHP_VERSION>-fpm.sock/listen = <PHP_SOCKET
 sed -i -e 's/;daemonize = yes/daemonize = no/g' /etc/php/<PHP_VERSION>/fpm/php-fpm.conf
 
 { \
-    echo '; Mailhog php.ini settings for Expresso PHP.';
+    echo '; Mailhog php.ini settings';
     echo 'sendmail_path = "/opt/go/bin/mhsendmail --smtp-addr=mailhog:1025"';
 } > /etc/php/<PHP_VERSION>/fpm/conf.d/20-mailhog.ini
 
 { \
     echo '[xdebug]'; \
-    echo 'zend_extension=/usr/lib/php/20170718/xdebug.so'; \
+    echo 'zend_extension=/usr/lib/php/20180731/xdebug.so'; \
     echo 'xdebug.profiler_enable=0'; \
     echo 'xdebug.default_enable=1'; \
     echo 'xdebug.remote_enable=1'; \
