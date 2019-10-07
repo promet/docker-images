@@ -12,7 +12,7 @@ RUN set -x \
  && apt-get -y update \
  && apt-get -y upgrade \
  && apt-get -y install apache2 \
- && a2enmod actions proxy proxy_fcgi ssl rewrite headers expires \
+ && a2enmod actions proxy proxy_fcgi proxy_http ssl rewrite headers expires \
  && sed -ri ' \
     s!^(\s*CustomLog)\s+\S+!\1 /proc/self/fd/1!g; \
     s!^(\s*ErrorLog)\s+\S+!\1 /proc/self/fd/2!g; \
