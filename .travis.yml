@@ -134,3 +134,10 @@ jobs:
       - docker run -it --rm php7.1:drupal-light-apache php -v
       - docker tag php7.1:drupal-light-apache prometsource/php7.1:drupal-light-apache
       - docker push prometsource/php7.1:drupal-light-apache
+    - stage: build prometsource/apache-tika-server image
+      script:
+        - docker build -t apache-tika-server ./docker/apache-tika-server/.
+        - docker run -d --name apache-tika-server apache-tika-server
+        - docker tag apache-tika-server prometsource/apache-tika-server
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        - docker push prometsource/apache-tika-server
