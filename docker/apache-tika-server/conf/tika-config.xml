@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<properties>
+    <!-- Default Parser for most things, except for PDFs, and never
+             use the Executable Parser -->
+    <parser class="org.apache.tika.parser.DefaultParser">
+        <mime-exclude>application/pdf</mime-exclude>
+        <parser-exclude class="org.apache.tika.parser.pdf.PDFParser"/>
+        <parser-exclude class="org.apache.tika.parser.executable.ExecutableParser"/>
+    </parser>
+    <parser class="org.apache.tika.parser.pdf.PDFParser">
+        <mime>application/pdf</mime>
+        <params>
+            <param name="allowExtractionForAccessibility" type="bool">true</param>
+            <param name="catchIntermediateExceptions" type="bool">false</param>
+            <!-- we really should throw an exception for this.
+                 We are currently not checking -->
+        </params>
+    </parser>
+</properties>
