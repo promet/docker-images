@@ -1,7 +1,7 @@
 FROM ubuntu:latest
 MAINTAINER oksanacyrwus@gmail.com
 
-ENV TIKA_VERSION 1.22
+ENV TIKA_VERSION 1.23
 ENV TIKA_SERVER_URL https://www.apache.org/dist/tika/tika-server-$TIKA_VERSION.jar
 
 COPY conf/tika-config.xml /usr/local/bin/tika-config.xml
